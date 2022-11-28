@@ -20,15 +20,22 @@ async function run(){
         const categoryCollection = client.db('ResaleMarket').collection('productsCategory');
         const productsCollection = client.db('ResaleMarket').collection('products');
 
+        app.get('/products', async(req, res)=>{
+            const query = {}
+            const result = await productsCollection.find().toArray();
+            res.send(result)
+        })
+
         app.get('/category', async(req, res)=>{
             const query = {}
             const result = await categoryCollection.find().toArray()
             res.send(result)
         })
 
-        app.get('/products', async(req, res)=>{
-            const query = {}
-            const result = await productsCollection.find().toArray();
+        app.get('/products/:category_id', async(req, res)=>{
+            const id = req.params.category_id;
+            const query = {category_id:id}
+            const result = await productsCollection.find(query).toArray()
             res.send(result)
         })
     }

@@ -1,5 +1,6 @@
 const express = require('express')
 const cors = require('cors');
+const jwt = require('jsonwebtoken')
 const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 
 const port = process.env.PORT || 5000;
@@ -18,6 +19,69 @@ async function run() {
         const categoryCollection = client.db('ResaleMarket').collection('productsCategory');
         const productsCollection = client.db('ResaleMarket').collection('products');
         const bookingCollection = client.db('ResaleMarket').collection('booking');
+        const userCollection = client.db('ResaleMarket').collection('user');
+
+        // generate token
+
+        app.get('/jwt', async(req, res) =>{
+            const email = req.query.email;
+            const query = {email:email};
+            console.log(email);
+            const user = await userCollection.findOne(query);
+            if(user){
+                const token = jwt.sign({email},process.env.ACCESS_TOKEN, {expiresIn: '1h' })
+                res.send({accessToken: token})
+            }
+            res.status(403).send({accessToken: ''})
+        })
+        // user information
+        app.post('/user', async(req,res)=>{
+            const user = req.body;
+            const result = await userCollection.insertOne(user);
+            res.send(result);
+        }) 
+
+        app.get('/users/buyer',async(req,res) =>{
+            let query = {userType: 'user'};
+            const result = await userCollection.find(query).toArray();
+            res.send(result)
+        })
+
+        app.delete('/users/buyer/:id', async(req, res)=>{
+            const id = req.params.id;
+            const query= {_id: ObjectId(id)}
+            const result = await userCollection.deleteOne(query);
+            res.send(result);
+        })
+
+        app.get('/users/seller',async(req,res) =>{
+            let query = {userType: 'seller'};
+            const result = await userCollection.find(query).toArray();
+            res.send(result)
+        })
+
+        app.delete('/users/seller/:id', async(req, res)=>{
+            const id = req.params.id;
+            const query= {_id: ObjectId(id)}
+            const result = await userCollection.deleteOne(query);
+            res.send(result);
+        })
+
+        app.put('/users/admin/:id',async(req,res)=>{
+            const id = req.params.id;
+            console.log(id);
+            const filter = { _id: ObjectId(id) }
+            const options = { upsert: true}
+            const updateDoc = {
+                $set: {
+                    userType:'admin'
+                }
+            }
+
+            const result = await userCollection.updateOne(filter,updateDoc,options)
+            res.send(result)
+        })
+
 
         app.get('/products', async (req, res) => {
             const query = {}

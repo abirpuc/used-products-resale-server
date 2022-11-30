@@ -68,13 +68,33 @@ async function run() {
         })
 
         app.put('/users/admin/:id',async(req,res)=>{
+            const email = req.params.email;
+            const query = {email:email};
+            const user = await userCollection.findOne(query)
+
+            if(user?.userType !=='admin'){
+                return res.status(403).send({message: 'forbidden access'})
+            }
             const id = req.params.id;
-            console.log(id);
             const filter = { _id: ObjectId(id) }
             const options = { upsert: true}
             const updateDoc = {
                 $set: {
                     userType:'admin'
+                }
+            }
+
+            const result = await userCollection.updateOne(filter,updateDoc,options)
+            res.send(result)
+        })
+
+        app.put('/seller/verified/:id', async(req, res)=>{
+            const id = req.params.id;
+            const filter = {_id : ObjectId(id)}
+            const options = { upsert: true}
+            const updateDoc = {
+                $set: {
+                    verified:'true'
                 }
             }
 

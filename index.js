@@ -68,13 +68,13 @@ async function run() {
         })
 
         app.put('/users/admin/:id',async(req,res)=>{
-            const email = req.params.email;
-            const query = {email:email};
-            const user = await userCollection.findOne(query)
+            // const email = req.params.email;
+            // const query = {email:email};
+            // const user = await userCollection.findOne(query)
 
-            if(user?.userType !=='admin'){
-                return res.status(403).send({message: 'forbidden access'})
-            }
+            // if(user?.userType !=='admin'){
+            //     return res.status(403).send({message: 'forbidden access'})
+            // }
             const id = req.params.id;
             const filter = { _id: ObjectId(id) }
             const options = { upsert: true}
@@ -107,6 +107,23 @@ async function run() {
             const query = {}
             const result = await productsCollection.find().toArray();
             res.send(result)
+        })
+
+        app.post('/products', async(req, res)=>{
+            const product = req.body;
+            const result = await productsCollection.insertOne(product);
+            res.send(result)
+        })
+
+        app.get('/myproducts', async(req,res)=>{
+            let query = {}
+            if(req.query.seller_email){
+                query = {
+                    seller_email: req.query.seller_email
+                }
+            }
+            const result = await productsCollection.find(query).toArray()
+            res.send(result) 
         })
 
         app.get('/category', async (req, res) => {
@@ -147,6 +164,7 @@ async function run() {
             const result = await bookingCollection.deleteOne(query);
             res.send(result);
         })
+
     }
     finally {
 

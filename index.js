@@ -23,51 +23,51 @@ async function run() {
 
         // generate token
 
-        app.get('/jwt', async(req, res) =>{
+        app.get('/jwt', async (req, res) => {
             const email = req.query.email;
-            const query = {email:email};
+            const query = { email: email };
             console.log(email);
             const user = await userCollection.findOne(query);
-            if(user){
-                const token = jwt.sign({email},process.env.ACCESS_TOKEN, {expiresIn: '1h' })
-                res.send({accessToken: token})
+            if (user) {
+                const token = jwt.sign({ email }, process.env.ACCESS_TOKEN, { expiresIn: '1h' })
+                res.send({ accessToken: token })
             }
-            res.status(403).send({accessToken: ''})
+            res.status(403).send({ accessToken: '' })
         })
         // user information
-        app.post('/user', async(req,res)=>{
+        app.post('/user', async (req, res) => {
             const user = req.body;
             const result = await userCollection.insertOne(user);
             res.send(result);
-        }) 
+        })
 
-        app.get('/users/buyer',async(req,res) =>{
-            let query = {userType: 'user'};
+        app.get('/users/buyer', async (req, res) => {
+            let query = { userType: 'user' };
             const result = await userCollection.find(query).toArray();
             res.send(result)
         })
 
-        app.delete('/users/buyer/:id', async(req, res)=>{
+        app.delete('/users/buyer/:id', async (req, res) => {
             const id = req.params.id;
-            const query= {_id: ObjectId(id)}
+            const query = { _id: ObjectId(id) }
             const result = await userCollection.deleteOne(query);
             res.send(result);
         })
 
-        app.get('/users/seller',async(req,res) =>{
-            let query = {userType: 'seller'};
+        app.get('/users/seller', async (req, res) => {
+            let query = { userType: 'seller' };
             const result = await userCollection.find(query).toArray();
             res.send(result)
         })
 
-        app.delete('/users/seller/:id', async(req, res)=>{
+        app.delete('/users/seller/:id', async (req, res) => {
             const id = req.params.id;
-            const query= {_id: ObjectId(id)}
+            const query = { _id: ObjectId(id) }
             const result = await userCollection.deleteOne(query);
             res.send(result);
         })
 
-        app.put('/users/admin/:id',async(req,res)=>{
+        app.put('/users/admin/:id', async (req, res) => {
             // const email = req.params.email;
             // const query = {email:email};
             // const user = await userCollection.findOne(query)
@@ -77,28 +77,28 @@ async function run() {
             // }
             const id = req.params.id;
             const filter = { _id: ObjectId(id) }
-            const options = { upsert: true}
+            const options = { upsert: true }
             const updateDoc = {
                 $set: {
-                    userType:'admin'
+                    userType: 'admin'
                 }
             }
 
-            const result = await userCollection.updateOne(filter,updateDoc,options)
+            const result = await userCollection.updateOne(filter, updateDoc, options)
             res.send(result)
         })
 
-        app.put('/seller/verified/:id', async(req, res)=>{
+        app.put('/seller/verified/:id', async (req, res) => {
             const id = req.params.id;
-            const filter = {_id : ObjectId(id)}
-            const options = { upsert: true}
+            const filter = { _id: ObjectId(id) }
+            const options = { upsert: true }
             const updateDoc = {
                 $set: {
-                    verified:'true'
+                    verified: 'true'
                 }
             }
 
-            const result = await userCollection.updateOne(filter,updateDoc,options)
+            const result = await userCollection.updateOne(filter, updateDoc, options)
             res.send(result)
         })
 
@@ -109,21 +109,41 @@ async function run() {
             res.send(result)
         })
 
-        app.post('/products', async(req, res)=>{
+        app.post('/products', async (req, res) => {
             const product = req.body;
             const result = await productsCollection.insertOne(product);
             res.send(result)
         })
 
-        app.get('/myproducts', async(req,res)=>{
+        app.get('/myproducts', async (req, res) => {
             let query = {}
-            if(req.query.seller_email){
+            if (req.query.seller_email) {
                 query = {
                     seller_email: req.query.seller_email
                 }
             }
             const result = await productsCollection.find(query).toArray()
-            res.send(result) 
+            res.send(result)
+        })
+
+        app.delete('/myproducts/:id', async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: ObjectId(id) };
+            const result = await productsCollection.deleteOne(query);
+            res.send(result)
+        })
+
+        app.put('/myproducts/:id', async (req, res) => {
+            const id = req.params.id;
+            const filter = { _id: ObjectId(id) }
+            const options = { upsert: true }
+            const updateDoc = {
+                $set: {
+                    advertise: 'advertise'
+                }
+            }
+            const result = await productsCollection.updateOne(filter, updateDoc, options)
+            res.send(result)
         })
 
         app.get('/category', async (req, res) => {
@@ -147,9 +167,9 @@ async function run() {
             res.send(result)
         })
 
-        app.get('/booking', async(req, res)=>{
+        app.get('/booking', async (req, res) => {
             let query = {}
-            if(req.query.customerEmail){
+            if (req.query.customerEmail) {
                 query = {
                     customerEmail: req.query.customerEmail
                 }
@@ -158,9 +178,9 @@ async function run() {
             res.send(result)
         })
 
-        app.delete('/booking/:id', async(req, res)=>{
+        app.delete('/booking/:id', async (req, res) => {
             const id = req.params.id;
-            const query= {_id: ObjectId(id)}
+            const query = { _id: ObjectId(id) }
             const result = await bookingCollection.deleteOne(query);
             res.send(result);
         })

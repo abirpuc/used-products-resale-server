@@ -41,6 +41,20 @@ async function run() {
             res.send(result);
         })
 
+        app.get('/user/admin/:email', async(req,res) =>{
+            const email = req.params.email;
+            const query = {email:email}
+            const user = await userCollection.findOne(query);
+            res.send({isAdmin: user?.userType === 'admin'})
+        })
+
+        app.get('/user/seller/:email', async(req, res) =>{
+            const email = req.params.email;
+            const query = {email:email}
+            const user = await userCollection.findOne(query);
+            res.send({isSeller: user?.userType === 'seller'})
+        })
+
         app.get('/users/buyer', async (req, res) => {
             let query = { userType: 'user' };
             const result = await userCollection.find(query).toArray();
@@ -135,14 +149,28 @@ async function run() {
 
         app.put('/myproducts/:id', async (req, res) => {
             const id = req.params.id;
-            const filter = { _id: ObjectId(id) }
-            const options = { upsert: true }
+            const filter = { _id: ObjectId(id) };
+            const options = { upsert: true };
             const updateDoc = {
                 $set: {
                     advertise: 'advertise'
                 }
             }
             const result = await productsCollection.updateOne(filter, updateDoc, options)
+            res.send(result)
+        })
+
+        app.patch('/products/:id', async(req, res) =>{
+            const id = req.params.id;
+            const filter = {_id : ObjectId(id)}
+            const product = req.body;
+            const options = {upsert: true}
+            const updateDoc = {
+                $set:{
+
+                }
+            }
+            const result = await productsCollection.updateOne(filter,updateDoc,options)
             res.send(result)
         })
 

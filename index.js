@@ -41,18 +41,18 @@ async function run() {
             res.send(result);
         })
 
-        app.get('/user/admin/:email', async(req,res) =>{
+        app.get('/user/admin/:email', async (req, res) => {
             const email = req.params.email;
-            const query = {email:email}
+            const query = { email: email }
             const user = await userCollection.findOne(query);
-            res.send({isAdmin: user?.userType === 'admin'})
+            res.send({ isAdmin: user?.userType === 'admin' })
         })
 
-        app.get('/user/seller/:email', async(req, res) =>{
+        app.get('/user/seller/:email', async (req, res) => {
             const email = req.params.email;
-            const query = {email:email}
+            const query = { email: email }
             const user = await userCollection.findOne(query);
-            res.send({isSeller: user?.userType === 'seller'})
+            res.send({ isSeller: user?.userType === 'seller' })
         })
 
         app.get('/users/buyer', async (req, res) => {
@@ -160,17 +160,28 @@ async function run() {
             res.send(result)
         })
 
-        app.patch('/products/:id', async(req, res) =>{
+        app.patch('/products/:id', async (req, res) => {
             const id = req.params.id;
-            const filter = {_id : ObjectId(id)}
+            console.log(id);
+            const filter = { _id: ObjectId(id) }
             const product = req.body;
-            const options = {upsert: true}
-            const updateDoc = {
-                $set:{
-
+            const option = { upsert: true };
+            const updateStatus = {
+                $set: {
+                    product_name:product.product_name,
+                    seller_email:product.seller_email,
+                    price:product.price,
+                    img:product.img,
+                    description:product.description,
+                    address:product.address,
+                    seller_name:product.seller_name,
+                    mobile:product.mobile,
+                    date:product.date,
+                    condition:product.condition,
+                    sellStatus:product.sellStatus
                 }
             }
-            const result = await productsCollection.updateOne(filter,updateDoc,options)
+            const result = await productsCollection.updateOne(filter, updateStatus, option);
             res.send(result)
         })
 

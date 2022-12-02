@@ -168,17 +168,17 @@ async function run() {
             const option = { upsert: true };
             const updateStatus = {
                 $set: {
-                    product_name:product.product_name,
-                    seller_email:product.seller_email,
-                    price:product.price,
-                    img:product.img,
-                    description:product.description,
-                    address:product.address,
-                    seller_name:product.seller_name,
-                    mobile:product.mobile,
-                    date:product.date,
-                    condition:product.condition,
-                    sellStatus:product.sellStatus
+                    product_name: product.product_name,
+                    seller_email: product.seller_email,
+                    price: product.price,
+                    img: product.img,
+                    description: product.description,
+                    address: product.address,
+                    seller_name: product.seller_name,
+                    mobile: product.mobile,
+                    date: product.date,
+                    condition: product.condition,
+                    sellStatus: product.sellStatus
                 }
             }
             const result = await productsCollection.updateOne(filter, updateStatus, option);
@@ -217,6 +217,13 @@ async function run() {
             res.send(result)
         })
 
+        app.get('/booking/:id', async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: ObjectId(id) };
+            const result = await bookingCollection.findOne(query);
+            res.send(result);
+        })
+
         app.delete('/booking/:id', async (req, res) => {
             const id = req.params.id;
             const query = { _id: ObjectId(id) }
@@ -227,19 +234,19 @@ async function run() {
     }
     finally {
 
+        }
     }
-}
 
 
 run().catch(err => console.log(err))
 
 
 
-app.get('/', (req, res) => {
-    res.send('used products resale market server is running')
-})
+    app.get('/', (req, res) => {
+        res.send('used products resale market server is running')
+    })
 
 
-app.listen(port, () => {
-    console.log(`used products resale market server is running on ${port}`);
-})
+    app.listen(port, () => {
+        console.log(`used products resale market server is running on ${port}`);
+    })
